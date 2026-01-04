@@ -69,6 +69,7 @@ def plant_6x6_pumpkin():
 	time_2 = get_time()
 	tick_2 = get_tick_count()
 	quick_print(time_2, tick_2)
+	quick_print('interval: ', time_2 - time_1, tick_2 - tick_1)
 
 # --- Main --- 
 def main():
@@ -78,6 +79,7 @@ def main():
 	clear()
 	print('Hello, World!')
 
+	quick_print('time, tick')
 	time_i = get_time()
 	tick_i = get_tick_count()
 	quick_print(time_i, tick_i)
