@@ -24,6 +24,21 @@ def traverse(func):
 			move(North)
 		move(East)
 
+def toroidal_serpentine_traverse(func):
+	size = get_world_size()
+	for y in range(size):
+		for x in range(size - 1):
+			func()
+			if is_even(y):
+				move(East)
+			else:
+				move(West)
+		func()
+
+		if y < size - 1:
+			move(North)
+	move(North)
+
 def water():
 	if get_water() < WATER_THRESHOLD and num_items(Items.Water) > 0:
 		use_item(Items.Water)
@@ -46,7 +61,6 @@ def plant_6x6_pumpkin():
 	tick_1 = get_tick_count()
 	quick_print(time_1, tick_1)
 	
-	state = {'replanted': False}
 	def _plant_pumpkin():
 		water()
 		plant(Entities.Pumpkin)
@@ -56,11 +70,15 @@ def plant_6x6_pumpkin():
 			plant(Entities.Pumpkin)
 			state['replanted'] = True
 		
-	traverse(_plant_pumpkin)
+	state = {'replanted': False}
+	replanted_pos = []
+
+	# Start to plant
+	toroidal_serpentine_traverse(_plant_pumpkin)
 
 	while True:
 		state['replanted'] = False
-		traverse(_replant)
+		toroidal_serpentine_traverse(_replant)
 
 		if not state['replanted']:
 			harvest()
@@ -84,7 +102,7 @@ def main():
 	tick_i = get_tick_count()
 	quick_print(time_i, tick_i)
 
-	traverse(harvest_and_till)
+	toroidal_serpentine_traverse(harvest_and_till)
 
 	# while True:
 	#     traverse(work)
