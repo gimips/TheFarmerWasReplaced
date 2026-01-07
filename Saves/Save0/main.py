@@ -1,5 +1,3 @@
-from __builtins__ import *
-
 # --- Configuration & Constants ---
 WATER_THRESHOLD = 0.75
 
@@ -55,7 +53,29 @@ def work():
 	else:
 		plant(Entities.Carrot)
 
-# TODO: add last replant mark
+def move_to(target_x, target_y):
+	size = get_world_size()
+
+	curr_x = get_pos_x()
+	dx = (target_x - curr_x + size) % size
+
+	if dx > size // 2:
+		for _ in range(size - dx):
+			move(West)
+	else:
+		for _ in range(dx):
+			move(East)
+
+	curr_y = get_pos_y()
+	dy = (target_y - curr_y + size) % size
+
+	if dy > size // 2:
+		for _ in range(size - dy):
+			move(South)
+	else:
+		for _ in range(dy):
+			move(North)	
+
 def plant_6x6_pumpkin():
 	time_1 = get_time()
 	tick_1 = get_tick_count()
@@ -68,26 +88,37 @@ def plant_6x6_pumpkin():
 	def _replant():
 		if get_entity_type() == Entities.Dead_Pumpkin:
 			plant(Entities.Pumpkin)
-			state['replanted'] = True
+			x, y = get_pos_x(), get_pos_y()
+			replant_list.append((x, y))
 		
-	state = {'replanted': False}
-	replanted_pos = []
+	# TODO: sort the list
+	replant_list = []
 
 	# Start to plant
 	toroidal_serpentine_traverse(_plant_pumpkin)
 
-	while True:
-		state['replanted'] = False
-		toroidal_serpentine_traverse(_replant)
+	toroidal_serpentine_traverse(_replant)
 
-		if not state['replanted']:
-			harvest()
+	while True:
+		if not replant_list:
 			break
+		
+		next_replant_list = []
+		for (tx, ty) in replant_list:
+			move_to(tx, ty)
+			if get_entity_type() == Entities.Dead_Pumpkin:
+				plant(Entities.Pumpkin)
+				next_replant_list.append((tx, ty))
+			replant_list = next_replant_list
+
+	# TODO: start from anywhere
+	move_to(0, 0)
+	harvest()
 
 	time_2 = get_time()
 	tick_2 = get_tick_count()
 	quick_print(time_2, tick_2)
-	quick_print('interval: ', time_2 - time_1, tick_2 - tick_1)
+	quick_print('interval:', time_2 - time_1, tick_2 - tick_1)
 
 # --- Main --- 
 def main():
