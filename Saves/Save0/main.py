@@ -1,28 +1,6 @@
-# --- Logging Configuration ---
-# 10:DEBUG, 20:INFO, 30:WARNING, 40:ERROR, 50:CRITICAL
-LOG_LEVEL = 10
+import logger
 
-def log_msg(level, label, message):
-    if level >= LOG_LEVEL:
-        time = get_time()
-        tick = get_tick_count()
-        formatted_msg = '[' + label + '] T:' + str(time) + ' | K:' + str(tick) + ' | ' + str(message)
-        quick_print(formatted_msg)
-
-def log_debug(message):
-    log_msg(10, 'DEBUG', message)
-
-def log_info(message):
-    log_msg(20, 'INFO', message)
-
-def log_warning(message):
-    log_msg(30, 'WARN', message)
-
-def log_error(message):
-    log_msg(40, 'ERROR', message)
-
-def log_critical(message):
-    log_msg(50, 'CRITICAL', message)
+logger.set_level(logger.DEBUG)
 
 # --- Configuration & Constants ---
 WATER_THRESHOLD = 0.75
@@ -129,6 +107,7 @@ def plant_6x6_pumpkin():
             break
         
         next_replant_list = []
+        logger.debug('replant list: ' + str(replant_list))
         for (tx, ty) in replant_list:
             move_to(tx, ty)
             if get_entity_type() == Entities.Dead_Pumpkin:
@@ -142,7 +121,7 @@ def plant_6x6_pumpkin():
 
     time2 = get_time()
     tick2 = get_tick_count()
-    log_info('Period: ' + str(time2 - time1) + ', Ticks: ' + str(tick2 - tick1))
+    logger.info('Period: ' + str(time2 - time1) + ', Ticks: ' + str(tick2 - tick1))
 
 # --- Main --- 
 def main():
@@ -152,7 +131,7 @@ def main():
     clear()
     print('Hello, World!')
     
-    log_info('Start')
+    logger.info('Start')
 
     toroidal_serpentine_traverse(harvest_and_till)
 
